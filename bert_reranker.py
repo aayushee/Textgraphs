@@ -240,37 +240,7 @@ class TG2019RerankProcessor:
             processed_q=create_hypothesis(fitb_q,ch)
             return processed_q
 			
-			
-			# correct_choice = row["AnswerKey"]
-            # option_start_loc = row["question"].rfind("(A)")
-            # split0, split1 = row["question"][:option_start_loc], row["question"][option_start_loc:]
 
-            # if choices == "none":
-                # return split0
-
-            # if correct_choice == "A" and "(B)" in split1:
-                # split0 += (split1[3:split1.rfind("(B)")])
-            # elif correct_choice == "A":
-                # split0 += (split1[3:])
-            # elif correct_choice == "B" and "(C)" in split1:
-                # split0 += (split1[split1.rfind("(B)") + 3:split1.rfind("(C)")])
-            # elif correct_choice == "B":
-                # split0 += (split1[split1.rfind("(B)") + 3:])
-            # elif correct_choice == "C" and "(D)" in split1:
-                # split0 += (split1[split1.rfind("(C)") + 3:split1.rfind("(D)")])
-            # elif correct_choice == "C":
-                # split0 += (split1[split1.rfind("(C)") + 3:])
-            # elif correct_choice == "D" and "(E)" in split1:
-                # split0 += (split1[split1.rfind("D)") + 3:split1.rfind("(E)")])
-            # elif correct_choice == "D":
-                # split0 += (split1[split1.rfind("D)") + 3:])
-            # elif correct_choice == "E" and "(F)" in split1:
-                # split0 += (split1[split1.rfind("(E)") + 3:split1.rfind("(F)")])
-            # elif correct_choice == "E":
-                # split0 += (split1[split1.rfind("(E)") + 3:])
-            # else:
-                # raise ValueError("Unhandled option type: {}".format(correct_choice))
-            # return split0
 
         if mcq_choices != "all":
             df_questions["ProcessedQuestion"] = df_questions.apply(remove_wrong_answer_choices, 1,
@@ -345,11 +315,11 @@ def check_sampling_index(num_samples,examples):
     sampling_indices=list(train_sampler)
     print("sampler indices created...")
     with open('sampled_indices.pkl','wb') as wr:
-	    pickle.dump(sampling_indices,wr)
+        pickle.dump(sampling_indices,wr)
     return set(sampling_indices)
 
 def get_sampled_indices():
-    with open('sampled_indices_unbalanced_1000000.pkl','rb') as wr:
+    with open('sampled_indices.pkl','rb') as wr:
         indices=pickle.load(wr)
     return set(indices)
 	
@@ -456,14 +426,10 @@ def convert_examples_to_features(filename,batch_size,examples, label_list, max_s
         dict['input_mask']=input_mask
         dict['segment_ids']=segment_ids
         dict['label_id']=label_id		
-        #if (ex_index+1)%batch_size==0:
-           # print(ex_index)
-         #   another_list=feat
-            #pickle.dump(feat,p)
+      
         with open(filename,'ab') as p:
             pickle.dump(dict,p)
-            #feat =[]			
-            #yield feat
+          
 
    
 				
@@ -525,7 +491,7 @@ def load_examples(args, task, mode='train'):
 #import _pickle as cPickle
 
 
-def train(args, train_dataset, model, tokenizer, num_samples, label_list):
+def train(args, train_dataset, model, tokenizer, label_list, num_samples):
     """ Train the model """
     if args.local_rank in [-1, 0]:
         tb_writer = SummaryWriter()
@@ -537,11 +503,12 @@ def train(args, train_dataset, model, tokenizer, num_samples, label_list):
     #train_dataloader_iter = iter(train_dataloader)
 
     train_dataloader = DataLoader(train_dataset, batch_size=args.train_batch_size)
-    num_batches=500000//args.train_batch_size
+    num_batches=num_samples//args.train_batch_size
 	
     if args.max_steps > 0:
         t_total = args.max_steps
-        args.num_train_epochs = args.max_steps // (len(train_dataloader) // args.gradient_accumulation_steps) + 1
+        #args.num_train_epochs = args.max_steps // (len(train_dataloader) // args.gradient_accumulation_steps) + 1
+        args.num_train_epochs = args.max_steps //( num_batches // args.gradient_accumulation_steps) + 1
     else:
       #  t_total = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
          t_total =  num_batches// args.gradient_accumulation_steps * args.num_train_epochs
@@ -596,8 +563,8 @@ def train(args, train_dataset, model, tokenizer, num_samples, label_list):
                       'token_type_ids': c if args.model_type in ['bert', 'xlnet'] else None,  # XLM don't use segment_ids
                       'labels':         d}
          
-            ouputs = model(**inputs)
-            loss = ouputs[0]  # model outputs are always tuple in pytorch-transformers (see doc)
+            outputs = model(**inputs)
+            loss = outputs[0]  # model outputs are always tuple in pytorch-transformers (see doc)
 
             if args.n_gpu > 1:
                 loss = loss.mean() # mean() to average on multi-gpu parallel training
@@ -697,46 +664,35 @@ def evaluate(args, model, tokenizer, label_list, prefix=""):
     nb_eval_steps = 0
     preds = None
     out_label_ids = None
-    for batch in tqdm(eval_dataloader, desc="Evaluating"):
-        model.eval()
+    eval_file=os.path.join(eval_output_dir, "tg2020_eval_preds{}.npy".format(prefix))
+    with open(eval_file,'ab') as f:
+        for batch in tqdm(eval_dataloader, desc="Evaluating"):
+            model.eval()
         #batch = tuple(t.to(args.device) for t in batch)
-        a=torch.stack(list(map(torch.stack, zip(*(batch['input_ids']))))).to(args.device)
-        b=torch.stack(list(map(torch.stack, zip(*(batch['input_mask']))))).to(args.device)
-        c=torch.stack(list(map(torch.stack, zip(*(batch['segment_ids']))))).to(args.device)
-        d=batch['label_id'].to(args.device)
+            a=torch.stack(list(map(torch.stack, zip(*(batch['input_ids']))))).to(args.device)
+            b=torch.stack(list(map(torch.stack, zip(*(batch['input_mask']))))).to(args.device)
+            c=torch.stack(list(map(torch.stack, zip(*(batch['segment_ids']))))).to(args.device)
+            d=batch['label_id'].to(args.device)
 
-        with torch.no_grad():
+            with torch.no_grad():
            
-            inputs = {'input_ids':      a,
+                inputs = {'input_ids':      a,
                       'attention_mask': b,
                       'token_type_ids': c if args.model_type in ['bert', 'xlnet'] else None,  # XLM don't use segment_ids
                       'labels':         d}
-            outputs = model(**inputs)
-            tmp_eval_loss, logits = outputs[:2]
+                outputs = model(**inputs)
+                tmp_eval_loss, logits = outputs[:2]
 
-            eval_loss += tmp_eval_loss.mean().item()
-        nb_eval_steps += 1
-        if preds is None:
+                eval_loss += tmp_eval_loss.mean().item()
+            nb_eval_steps += 1
             preds = logits.detach().cpu().numpy()
-            out_label_ids = inputs['labels'].detach().cpu().numpy()
-        else:
-            preds = np.append(preds, logits.detach().cpu().numpy(), axis=0)
-            out_label_ids = np.append(out_label_ids, inputs['labels'].detach().cpu().numpy(), axis=0)
+            np.save(f, preds)
 
-    np.save(os.path.join(eval_output_dir, "eval_preds{}.npy".format(prefix)), preds)
+            out_label_ids = inputs['labels'].detach().cpu().numpy()
 
     eval_loss = eval_loss / nb_eval_steps
   #  print("predictions: ",preds)
    # print("output label id",out_label_ids)
-    result, _ = compute_metrics(eval_examples, preds, out_label_ids)
-    results.update(result)
-
-    output_eval_file = os.path.join(eval_output_dir, "eval_results{}.txt".format(prefix))
-    with open(output_eval_file, "w") as writer:
-        logger.info("***** Eval results {} *****".format(prefix))
-        for key in sorted(result.keys()):
-            logger.info("  %s = %s", key, str(result[key]))
-            writer.write("%s = %s\n" % (key, str(result[key])))
 
     return results
 
@@ -746,27 +702,26 @@ def predict(args, model, tokenizer, label_list, prefix=""):
 
     results = {}
 
-   # out= load_and_cache_examples(args, eval_task, tokenizer, mode='test')
-    #eval_examples, eval_dataset = next(out)
-    
-    eval_examples=load_examples(args,eval_task,mode='test')
     mode='test'
+    eval_examples=load_examples(args,eval_task,mode='test')
     cached_features_file = os.path.join(args.data_dir,'features_{}_{}_{}_{}'.format(mode,list(filter(None, args.model_name_or_path.split('/'))).pop(),str(args.max_seq_length),str(eval_task)))
     if args.cached_features_file:
         cached_features_file = args.cached_features_file
 
-   # if os.path.exists(cached_features_file):
-    #    logger.info("Loading features from cached file %s", cached_features_file)	
-    #else:
-    convert_examples_to_features(cached_features_file,args.per_gpu_train_batch_size,eval_examples, label_list, args.max_seq_length, tokenizer, args.output_mode,
+    if os.path.exists(cached_features_file):
+        logger.info("Loading features from cached file %s", cached_features_file)
+    else:
+        logger.info("Creating features from cached examples file.... ")
+
+        convert_examples_to_features(cached_features_file,args.per_gpu_train_batch_size,eval_examples, label_list, args.max_seq_length, tokenizer, args.output_mode,
             cls_token_at_end=bool(args.model_type in ['xlnet']),            # xlnet has a cls token at the end
             cls_token=tokenizer.cls_token,
             sep_token=tokenizer.sep_token,
             cls_token_segment_id=2 if args.model_type in ['xlnet'] else 1,
             pad_on_left=bool(args.model_type in ['xlnet']),                 # pad on the left for xlnet
             pad_token_segment_id=4 if args.model_type in ['xlnet'] else 0) 
-    print("written features to disk, now loading file...")
-			
+        print("written features to disk, now loading file...")
+
     eval_dataset=MyDataset(args,cached_features_file)
     
     if not os.path.exists(eval_output_dir) and args.local_rank in [-1, 0]:
@@ -803,15 +758,9 @@ def predict(args, model, tokenizer, label_list, prefix=""):
             logits = outputs[0]
 
         nb_eval_steps += 1
-        #if preds is None:
-         #   preds = logits.detach().cpu().numpy()
-        #else:
-         #   preds = np.append(preds, logits.detach().cpu().numpy(), axis=0)
         preds = logits.detach().cpu().numpy()
         with open(eval_file,'ab') as f:
             np.save(f, preds)
-    #np.save(os.path.join(eval_output_dir, "test_preds{}.npy".format(prefix)), preds)
-
 
 base_path=''
 class Args1:
@@ -820,17 +769,12 @@ class Args1:
     TEST_QUESTIONS_FILE= base_path +"questions/questions.test.tsv"
     FACTS_FILE= base_path +"questions/explanations.tsv"
 
-# Intermediate examples and features files will be cached here
-# Example files are necessary for generating final predictions
-    DATA_DIR=base_path +"questions"
 
-# Prediction files
-    ENSEMBLE_PRED_FILE=base_path +"predictions/predict-bert-test-path-rank-1e-k50-rerank-3e-sl140-ensemble.txt"
-    FINAL_PRED_FILE=base_path +"predictions/predict-bert-test-path-rank-1e-k50-rerank-3e-sl140-ensemble-move-redundant.txt"
+    DATA_DIR=base_path +"questions"
 
     RERANK_TRAIN_SEQ=72
     RERANK_PRED_SEQ=140
-    RERANK_OUTPUT_DIR= base_path +"outputs/tg2020/"
+    RERANK_OUTPUT_DIR= base_path +"outputs/bert_rerank_correctchoices_unweighted/"
 
     PATH_RANK_TRAIN_SEQ=90
     PATH_RANK_TRAIN_TFIDF=25
@@ -842,7 +786,7 @@ class Args1:
     model_name_or_path= "bert-base-uncased" 
     task_name= "TG2020"
     do_train=1
-    do_eval=0
+    do_eval=1
     do_lower_case=1
     data_dir=DATA_DIR
     max_seq_length=RERANK_TRAIN_SEQ
@@ -890,7 +834,7 @@ class Args2:
     FACTS_FILE=base_path + "questions/explanations.tsv"
     DATA_DIR=base_path + "questions"
     RERANK_PRED_SEQ=140
-    RERANK_OUTPUT_DIR=base_path + "outputs/tg2020/"
+    RERANK_OUTPUT_DIR=base_path + "outputs/bert_rerank_correctchoices_unweighted/"
 
   
   # Get predictions from bert-reranker (base predictions)
@@ -940,7 +884,7 @@ class Args2:
 
 def main():
     
-    args = Args2()
+    args = Args1()
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
         raise ValueError("Output directory ({}) already exists and is not empty. Use --overwrite_output_dir to overcome.".format(args.output_dir))
@@ -1022,9 +966,9 @@ def main():
         #print("type of object from mydataset: ",type(out))
         #print(type(train_dataset))  
         
-        num_samples=len(train_examples)
+        num_samples=500000
         print("number of training samples: ",num_samples)
-        global_step, tr_loss = train(args, train_dataset, model, tokenizer,num_samples)
+        global_step, tr_loss = train(args, train_dataset, model, tokenizer, label_list, num_samples)
         logger.info(" global_step = %s, average loss = %s", global_step, tr_loss)
 
     # Saving best-practices: if you use defaults names for the model, you can reload it using from_pretrained()

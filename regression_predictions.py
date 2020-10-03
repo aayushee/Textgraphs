@@ -1,12 +1,11 @@
 import pandas as pd
-from collections import OrderedDict 
+from collections import OrderedDict
+from collections import defaultdict
 
 
 mode='test'
 number_of_features='3'
 df_test = pd.read_csv('questions/ilp_'+str(number_of_features)+'scores_'+mode+'.csv')
-
-from collections import defaultdict
 result=defaultdict(dict)
 qids=[]
 for i,row in df_test.iterrows():

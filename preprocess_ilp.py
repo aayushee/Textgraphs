@@ -64,23 +64,6 @@ def write_top30_pred_text(pred_dict,pred_top30_text_fname,exp_dict):
             for val in values:
                 wr.write(key+"\t"+exp_dict[val]+'\n')
  
-def write_ilp_data(pred_dict, exp_dict, q_dict, ilp_fname):
-    print("writing file for ilp...")
-    delimiters="(A)","(B)","(C)","(D)","(E)","(1)","(2)","(3)","(4)"
-    regexPattern = '|'.join(map(re.escape, delimiters))
-    separator="//"
-    with open (ilp_fname,'w') as wr:
-        for key in pred_dict.keys():
-            values = pred_dict[key]
-            exp_texts=[]
-            ques = q_dict[key]
-            qa=re.split(regexPattern, ques)
-            qtext=qa[0]
-            options=separator.join(qa[1:])
-            for val in values:
-                exp_texts.append(exp_dict[val].strip())
-            explanation = " . ".join(exp_texts)
-            wr.write(key+"\t"+qtext+"\t"+options+"\t"+explanation+"\n")
 
 def write_ilp_data_again(pred_dict, exp_dict, q_dict, ilp_fname, a_dict):
     print("writing file for ilp...")
@@ -110,17 +93,48 @@ def write_ilp_data_again(pred_dict, exp_dict, q_dict, ilp_fname, a_dict):
             explanation = " . ".join(exp_texts)
             wr.write(key+"\t"+qtext+"\t"+ch+"\t"+explanation+"\n")
 
-model_name='bert'            
+def read_tfidf_files(prediction_fname,exp_fname,test_fname):
+    pred_dict=OrderedDict()
+    exp_dict={}
+    q_dict={}
+    a_dict={}
+    df_questions = pd.read_csv(test_fname, sep='\t')
+    for index, row in df_questions.iterrows():
+        q_dict[row["QuestionID"]]= row["question"]
+        a_dict[row["QuestionID"]]= row["AnswerKey"]
+    with open(exp_fname,'r') as f1:
+        for line in f1:
+            text = line.strip().split('\t')
+            exp_dict[text[0]] = text[1]
+
+    with open(prediction_fname,'r') as f2:
+        for line in f2:
+            pred_dict = process_line(line.strip(),pred_dict)
+    return pred_dict,exp_dict,q_dict,a_dict
+
 mode='test'
-prediction_fname = 'predictions/predictions_'+model_name+'.txt'
 exp_fname = 'questions/explanations.tsv'
-pred_top30_fname = 'predictions/'+model_name+'_top30.txt'
-pred_top30_text_fname = 'predictions/'+model_name+'_top30_text.txt'
-test_fname = 'questions/questions.'+mode+'.tsv'
-ilp_fname = 'questions/ilp_data_'+mode+'.txt'
-pred_dict, exp_dict, q_dict, a_dict = read_files(prediction_fname,exp_fname,test_fname)
-print("questions and predictions processed: ",len(pred_dict))
-write_top30_pred(pred_dict,pred_top30_fname)
-write_top30_pred_text(pred_dict,pred_top30_text_fname,exp_dict)
-#write_ilp_data(pred_dict, exp_dict, q_dict, ilp_fname)
-write_ilp_data_again(pred_dict, exp_dict, q_dict, ilp_fname, a_dict)
+
+
+if mode=='test':
+    model_name='bert'
+    pred_top30_fname = 'predictions/'+model_name+'_top30.txt'
+    pred_top30_text_fname = 'predictions/'+model_name+'_top30_text.txt'
+    test_fname = 'questions/questions.'+mode+'.tsv'
+    ilp_fname = 'questions/ilp_data_'+mode+'.txt'
+    prediction_fname = 'predictions/predictions_'+model_name+'.txt'
+    pred_dict, exp_dict, q_dict, a_dict = read_files(prediction_fname,exp_fname,test_fname)
+    print("questions and predictions processed: ",len(pred_dict))
+    write_top30_pred(pred_dict,pred_top30_fname)
+    write_top30_pred_text(pred_dict,pred_top30_text_fname,exp_dict)
+    write_ilp_data_again(pred_dict, exp_dict, q_dict, ilp_fname, a_dict)
+else:
+    model_name='tfidf'
+    pred_top30_fname = 'predictions/'+model_name+'_'+mode+'_top30.txt'
+    pred_top30_text_fname = 'predictions/'+model_name+'_top30_text.txt'
+    test_fname = 'questions/questions.'+mode+'.tsv'
+    ilp_fname = 'questions/ilp_data_'+mode+'.txt'
+    pred_dict,exp_dict,q_dict,a_dict=read_tfidf_files(pred_top30_fname,exp_fname,test_fname)
+    print("questions and predictions processed: ",len(pred_dict))
+    write_top30_pred_text(pred_dict,pred_top30_text_fname,exp_dict)
+    write_ilp_data_again(pred_dict, exp_dict, q_dict, ilp_fname, a_dict)
