@@ -1,8 +1,9 @@
 from collections import OrderedDict
 from itertools import islice
+import sys
 
 path=""
-number_of_features=3
+number_of_features=sys.argv[1]
 bert_fname=path+"predictions/predictions_bert.txt"
 ilp_fname=path+"predictions/regression_preds"+str(number_of_features)+".txt"
 new_fname=path+"predictions/pred_bert_regression_"+str(number_of_features)+"scores_combined.txt"

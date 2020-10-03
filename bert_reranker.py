@@ -27,7 +27,7 @@ from torch.utils.data import (DataLoader, RandomSampler, WeightedRandomSampler, 
 from torch.utils.data.distributed import DistributedSampler
 from tensorboardX import SummaryWriter
 from tqdm import tqdm, trange
-
+import sys
 from transformers import (WEIGHTS_NAME, BertConfig,
                           BertForSequenceClassification, BertTokenizer,
                           XLMConfig, XLMForSequenceClassification,
@@ -883,8 +883,11 @@ class Args2:
     max_grad_norm = 1.0
 
 def main():
-    
-    args = Args1()
+    mode=sys.argv[1]
+    if mode=='train':
+        args = Args1()
+    if mode=='test':
+        args = Args2()
 
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train and not args.overwrite_output_dir:
         raise ValueError("Output directory ({}) already exists and is not empty. Use --overwrite_output_dir to overcome.".format(args.output_dir))

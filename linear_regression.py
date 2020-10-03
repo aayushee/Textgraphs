@@ -5,8 +5,9 @@ import numpy as np
 import csv
 import pandas as pd
 from sklearn.utils import resample
+import sys
 
-number_of_features=3
+number_of_features=sys.argv[1]
 mode='train'
 fname='questions/ilp_'+str(number_of_features)+'scores_'+mode+'.csv'
 
@@ -30,11 +31,11 @@ Data = np.genfromtxt(fname, delimiter=',')[1:] # Remove the CSV header
 
 
 col1=3
-if number_of_features==2:
+if number_of_features=='2':
     col2=5
-if number_of_features==3:
+if number_of_features=='3':
     col2=6 
-if number_of_features==4:
+if number_of_features=='4':
     col2=7
 
 labels = Data[:,col2]

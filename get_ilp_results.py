@@ -4,13 +4,14 @@ import urllib.parse
 import json
 from collections import OrderedDict 
 import pandas as pd
+import sys
 
 SOLVER_DOMAIN = '192.168.1.103'
 SOLVER_PORT = '9003'
  
-mode='test'
-irange=3
-if irange==3:
+mode=sys.argv[1]
+irange=sys.argv[2]
+if int(irange)==3:
     colname="QID,EID,QPA,PAA,IPA"
 else:
     colname="QID,EID,QPA,PAA,IPA,ISA"
@@ -88,12 +89,12 @@ def read_data(fname,exp_dict,irange):
            # print(sents)
             exp_ids=[]
             if len(indexes) >1:
-                for i in range(0,len(indexes),irange):
+                for i in range(0,len(indexes),int(irange)):
                 
                     qpa.append(indexes[i].strip())
                     paa.append(indexes[i+1].strip())
                     ipa.append(indexes[i+2].strip())
-                    if irange==4:
+                    if int(irange)==4:
                         isa.append(indexes[i+3].strip())
                 for sent in sents:
                     exp_ids.append(exp_dict[sent.strip()])

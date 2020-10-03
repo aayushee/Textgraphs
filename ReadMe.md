@@ -20,11 +20,10 @@ git clone https://github.com/NVIDIA/apex  \
 cd apex\
 pip install -v --no-cache-dir ./    \
   sh setup.sh\
-To train:\
-    python bert_reranker.py\
+To train and evaluate:\
+    python bert_reranker.py train\
 To test:\
-    Replace line 887 with:     args = Args2()\
-    python bert_reranker.py\
+    python bert_reranker.py test\
 If not training and testing the model, use the following link that has BERT trained model and test predictions:
 https://drive.google.com/drive/folders/17nZaZ7t54CgGfCZ1rmi8NSoS3QFCAXnz?usp=sharing  \
 model name: pytorch_model.bin\
@@ -48,27 +47,32 @@ Run baseline.py and process_regression_data.py to generate labeled file for trai
     python baseline.py -n 30 tablestore/v2.1/tables questions/questions.train.tsv>predictions/tfidf_train_top30.txt  \
     python process_regression_data.py\
 Run preprocess_ilp.py to generate train and test data file for ILP model.\
-    Set mode==train/test in line 115.\
-    python preprocess_ilp.py\
+    python preprocess_ilp.py train\
+    python preprocess_ilp.py test\
 Run get_ilp_results.py to get scores from ILP for train and test data.\
-    Set Solver Port and Solver Domain in lines 8 and 9 as set up in SemanticILP above.\
-    Set parameter 'irange' can be modified on line 12 to get 3 feature scores or 4 feature scores.\
-    Set parameter mode==train/test on line 11.\
-    python get_ilp_results.py\
+    Set Solver Port and Solver Domain in lines 9 and 10 as set up in SemanticILP above.\
+    Set n=3/4 to get 3 feature scores or 4 feature scores.\
+    Set parameter mode=train/test 
+    python get_ilp_results.py n mode
 Run linear_regression.py to perform linear regression on the dataset followed by running regression_predictions.py to sort scores and regenerate ranked predictions.\
-    Set number_of_features in line 9 as 3/4 to get 3 or 4 features combined scores respectively.\
-    python linear_regression.py\
-    Set number_of_features in line 7 as 3/4 to get 3 or 4 features predictions respectively.\
-    python regression_predictions.py\
+    Set n as 3/4 to get 3 or 4 features combined scores respectively.\
+    python linear_regression.py n\
+    Set n as 3/4 to get 3 or 4 features predictions respectively.\
+    python regression_predictions.py n\
     The top 30 predictions from regression model created from above are also available in the 'predictions' folder:\
-    regression_preds2.txt \
     regression_preds3.txt \
     regression_preds4.txt \
-Run copy_predictions.py to add remaining predictions from bert after top-K and evaluate.py to evaluate the generated predictions.\
-    Set number_of_features in line 5 as 3/4 to get 3 or 4 features predictions respectively. \
-    python copy_predictions.py \
+Run copy_predictions.py to add remaining predictions from BERT baseline after top-K and evaluate.py to evaluate the generated predictions.\
+    Set n as 3/4 to get 3 or 4 features predictions respectively. \
+    python copy_predictions.py n \
     generated files: pred_bert_regression_3scores_combined.txt/pred_bert_regression_4scores_combined.txt \
     python evaluate.py --gold questions/questions.test.tsv predictions/[generated file.txt]  
 
-
+D) Summarizer Ranking
+Run textrank.py file to get predictions on test data from summarizer.
+ python preprocess_ilp.py test\
+ python textrank.py\
+ This will create the predictions file. To evaluate the predictions, run:\
+ python evaluate.py --gold questions/questions.test.tsv predictions/predict_textrank.txt
+ 
 

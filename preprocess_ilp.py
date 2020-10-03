@@ -2,6 +2,7 @@ from itertools import islice
 import pandas as pd
 import re
 from collections import OrderedDict 
+import sys
 
 def read_files(prediction_fname,exp_fname,test_fname):
     pred_dict=OrderedDict()
@@ -112,7 +113,8 @@ def read_tfidf_files(prediction_fname,exp_fname,test_fname):
             pred_dict = process_line(line.strip(),pred_dict)
     return pred_dict,exp_dict,q_dict,a_dict
 
-mode='test'
+mode=sys.argv[1]
+
 exp_fname = 'questions/explanations.tsv'
 
 

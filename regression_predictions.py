@@ -1,10 +1,10 @@
 import pandas as pd
 from collections import OrderedDict
 from collections import defaultdict
-
+import sys
 
 mode='test'
-number_of_features='3'
+number_of_features=sys.argv[1]
 df_test = pd.read_csv('questions/ilp_'+str(number_of_features)+'scores_'+mode+'.csv')
 result=defaultdict(dict)
 qids=[]
