@@ -5,8 +5,8 @@ import json
 from collections import OrderedDict 
 import pandas as pd
 
-# SOLVER_DOMAIN = '192.168.1.103'
-# SOLVER_PORT = '9003'
+SOLVER_DOMAIN = '192.168.1.103'
+SOLVER_PORT = '9003'
  
 mode='test'
 irange=3

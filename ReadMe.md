@@ -51,6 +51,7 @@ Run preprocess_ilp.py to generate train and test data file for ILP model.\
     Set mode==train/test in line 115.\
     python preprocess_ilp.py\
 Run get_ilp_results.py to get scores from ILP for train and test data.\
+    Set Solver Port and Solver Domain in lines 8 and 9 as set up in SemanticILP above.\
     Set parameter 'irange' can be modified on line 12 to get 3 feature scores or 4 feature scores.\
     Set parameter mode==train/test on line 11.\
     python get_ilp_results.py\
