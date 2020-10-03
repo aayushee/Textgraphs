@@ -1,11 +1,11 @@
 from collections import OrderedDict
 from itertools import islice
 
-path="D:/Worldtree/"
+path=""
+number_of_features=3
 bert_fname=path+"predictions/predictions_bert.txt"
-#ilp_fname=path+"predictions/ilp_predictions_twoscores.txt"
-ilp_fname=path+"predictions/regression_preds3.txt"
-new_fname=path+"predictions/pred_bert_regression_threescores_combined.txt"
+ilp_fname=path+"predictions/regression_preds"+str(number_of_features)+".txt"
+new_fname=path+"predictions/pred_bert_regression_"+str(number_of_features)+"scores_combined.txt"
 
 def write_pred(new_fname,pred_dict):
     print("writing predictions...")

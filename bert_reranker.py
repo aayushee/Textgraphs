@@ -812,9 +812,7 @@ def predict(args, model, tokenizer, label_list, prefix=""):
             np.save(f, preds)
     #np.save(os.path.join(eval_output_dir, "test_preds{}.npy".format(prefix)), preds)
 
-#from google.colab import drive
-#drive.mount('/content/gdrive',force_remount=True)
-#base_path = '/content/gdrive/My Drive/Bert_rerank/'
+
 base_path=''
 class Args1:
     TRAIN_QUESTIONS_FILE= base_path + "questions/questions.train.tsv"

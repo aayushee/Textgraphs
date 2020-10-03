@@ -22,8 +22,8 @@ def read_files(prediction_fname,exp_fname,test_fname):
         for line in islice(f2, 30):  # get the first 30 lines
             pred_dict = process_line(line.strip(),pred_dict)
         while True:
-            #lines = list(islice(f2, 9697, 9727)) # get the top 30 for remaining qid 
-            lines = list(islice(f2, 9512, 9542))
+            lines = list(islice(f2, 9697, 9727)) # get the top 30 for remaining qid 
+            #lines = list(islice(f2, 9512, 9542)) #get top 30 from tf-idf
             if not lines:
                 break
             else:
@@ -109,13 +109,15 @@ def write_ilp_data_again(pred_dict, exp_dict, q_dict, ilp_fname, a_dict):
                 exp_texts.append(exp_dict[val].strip())
             explanation = " . ".join(exp_texts)
             wr.write(key+"\t"+qtext+"\t"+ch+"\t"+explanation+"\n")
-            
-prediction_fname = 'predictions/pred_tfidf.txt'
+
+model_name='bert'            
+mode='test'
+prediction_fname = 'predictions/predictions_'+model_name+'.txt'
 exp_fname = 'questions/explanations.tsv'
-pred_top30_fname = 'predictions/tfidf_top30.txt'
-pred_top30_text_fname = 'predictions/tfidf_top30_text.txt'
-test_fname = 'questions/questions.test.tsv'
-ilp_fname = 'questions/tfidf_test.txt'
+pred_top30_fname = 'predictions/'+model_name+'_top30.txt'
+pred_top30_text_fname = 'predictions/'+model_name+'_top30_text.txt'
+test_fname = 'questions/questions.'+mode+'.tsv'
+ilp_fname = 'questions/ilp_data_'+mode+'.txt'
 pred_dict, exp_dict, q_dict, a_dict = read_files(prediction_fname,exp_fname,test_fname)
 print("questions and predictions processed: ",len(pred_dict))
 write_top30_pred(pred_dict,pred_top30_fname)

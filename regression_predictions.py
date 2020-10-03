@@ -3,7 +3,8 @@ from collections import OrderedDict
 
 
 mode='test'
-df_test = pd.read_csv('questions/ilp_threescores_'+mode+'.csv')
+number_of_features='3'
+df_test = pd.read_csv('questions/ilp_'+str(number_of_features)+'scores_'+mode+'.csv')
 
 from collections import defaultdict
 result=defaultdict(dict)
@@ -33,7 +34,7 @@ with open('predictions/bert_top30.txt','r') as rb:
     for line in rb:
         pred_dict=process_line(line,pred_dict)
     
-with open('predictions/regression_preds3.txt','w') as wr:
+with open('predictions/regression_preds'+str(number_of_features)+'.txt','w') as wr:
     for key in pred_dict.keys():
         if key in result:
             expscores=result[key]     

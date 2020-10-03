@@ -54,11 +54,10 @@ def write_pred(new_fname,pred_dict):
                 wr.write(item+'\t'+exp+'\n')
 
 
-path="D:/Worldtree/"
+path=""
 questions_file=path+"questions/questions.test.tsv"
 facts_file=path+"questions/explanations.tsv"
 prediction_fname=path+"predictions/tg2020_test_predicted.txt"
-#prediction_fname=path+"predictions/small_pred.txt"
 new_fname=path+"predictions/predictions_bert.txt"
 duplicates=read_exp(facts_file)
 print(len(duplicates))

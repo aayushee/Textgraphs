@@ -6,8 +6,9 @@ import csv
 import pandas as pd
 from sklearn.utils import resample
 
+number_of_features=3
 mode='train'
-fname='questions/ilp_threescores_'+mode+'.csv'
+fname='questions/ilp_'+str(number_of_features)+'scores_'+mode+'.csv'
 
 df=pd.read_csv(fname)
 # Separate majority and minority classes
@@ -20,18 +21,20 @@ df_majority_downsampled = resample(df_majority,
                                  random_state=123) # reproducible results
 
 df_downsampled = pd.concat([df_majority_downsampled, df_minority])
-df_downsampled.to_csv('questions/ilp_threescores_resampled_'+mode+'.csv',index=False)
+df_downsampled.to_csv('questions/ilp_'+str(number_of_features)+'scores_resampled_'+mode+'.csv',index=False)
 
 
-fname='questions/ilp_threescores_resampled_'+mode+'.csv'
+fname='questions/ilp_'+str(number_of_features)+'scores_resampled_'+mode+'.csv'
 
 Data = np.genfromtxt(fname, delimiter=',')[1:] # Remove the CSV header
 
 
 col1=3
-if Data.shape[1]==7:
+if number_of_features==2:
+    col2=5
+if number_of_features==3:
     col2=6 
-if Data.shape[1]==8:
+if number_of_features==4:
     col2=7
 
 labels = Data[:,col2]
@@ -48,10 +51,8 @@ print("coef of determination: ",model.coef_)
 print ("intercept value: ",intercept)
 
 mode='test'
-fname_test='questions/ilp_threescores_'+mode+'.csv'
-#test_file='questions/regression_'+mode+'again_scaled.csv'
+fname_test='questions/ilp_'+str(number_of_features)+'scores_'+mode+'.csv'
 scaledscore=[]
-# dic=
 
 TestData = np.genfromtxt(fname_test, delimiter=',')[1:] # Remove the CSV header
 
