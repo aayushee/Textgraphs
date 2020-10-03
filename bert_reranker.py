@@ -339,9 +339,11 @@ def convert_examples_to_features(filename,batch_size,examples, label_list, max_s
     
     if "train" in filename:
         total_samples_to_generate=500000
-        sampling_indices=check_sampling_index(total_samples_to_generate,examples)
-        #sampling_indices=get_sampled_indices()
-	
+        if (os.path.exists('sampled_indices.pkl')):
+            sampling_indices=get_sampled_indices()
+        else:
+            sampling_indices=check_sampling_index(total_samples_to_generate,examples)
+
     label_map = {label: i for i, label in enumerate(label_list)}
     print("number of examples to be processed: ",len(examples))
  #   with open(filename,'ab') as p:

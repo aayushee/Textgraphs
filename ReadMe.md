@@ -1,5 +1,7 @@
-All our experiments were done with python 3.5 Miniconda environment. 
-For BERT model, the experiments were done on Google Colab GPU.
+All our experiments were done with python 3.6 Miniconda environment. 
+Make sure following packages are available in the environment with pip install:
+numpy, tqdm, scikit-learn, pandas, requests, urllib3, scipy, nltk, torch, torchvision.\
+For BERT Baseline Ranking, the experiments were done on Google Colab GPU.
 
 A) TF-IDF Ranking\
 Run baseline.py with the following parameters to generate tf-idf baseline ranking:\
@@ -30,8 +32,8 @@ model name: pytorch_model.bin\
 prediction file on test data from model : tg2020_test_preds.npy\
 test examples zipped file : examples_test_bert-base-uncased_140_tg2020.zip. unzip it & save in 'questions' folder.
 
-2. Run write_predictions.py to write baseline ranking predictions as a text file [tg2020_test_predicted.txt]. It requires test predictions from BERT [tg2020_test_preds.npy]
-and test examples file [examples_test_bert-base-uncased_140_tg2020].\
+2. Run write_predictions.py to write baseline ranking predictions as a text file [tg2020_test_predicted.txt]. It requires test predictions from BERT [tg2020_test_preds.npy] to be kept in the main directory
+and test examples file [examples_test_bert-base-uncased_140_tg2020] in 'questions' directory.\
     python write_predictions.py 
 
 3. Run reorder_predictions.py to move duplicate predictions to the bottom and then evaluate the predicted file using evaluate.py:\

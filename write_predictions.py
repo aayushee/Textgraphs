@@ -34,10 +34,11 @@ def ensemble_preds(questions_file, facts_file, base_examples_file,
     df_questions = df_questions[df_questions['flags'].str.lower().isin(('success', 'ready'))]
 
   #  df_facts = pd.read_csv(facts_file, sep='\t').drop_duplicates(subset=["uid"], keep="first").reset_index()
-
+    print('loading test examples file...')
     base_examples = torch.load(base_examples_file)
+    print('collating all predictions...')
     #base_logits = np.load(base_logits_file)
-    print(base_examples[0].text_a,base_examples[0].text_b)
+    #print(base_examples[0].text_a,base_examples[0].text_b)
    # print("stop")    
     with open(base_logits_file,'rb') as f:
         fsz = os.fstat(f.fileno()).st_size
