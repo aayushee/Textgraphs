@@ -156,6 +156,7 @@ def main():
     df_q=get_hypothesis(df_q)
     new_df1=df_e.drop_duplicates(subset ="text", keep = 'first', inplace = False).reset_index(drop=True) 
     new_df=new_df1.drop_duplicates(subset ="uid", keep = 'first', inplace = False).reset_index(drop=True)
+    new_df = new_df[new_df.uid != 'Good'].reset_index(drop=True)
     #print('length of unique explanations: ',len(new_df))
     vectorizer = TfidfVectorizer().fit(df_q['qa']).fit(new_df['text'])
     X_q = vectorizer.transform(df_q['qa'])

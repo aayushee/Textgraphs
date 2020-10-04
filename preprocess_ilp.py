@@ -23,7 +23,7 @@ def read_files(prediction_fname,exp_fname,test_fname):
         for line in islice(f2, 30):  # get the first 30 lines
             pred_dict = process_line(line.strip(),pred_dict)
         while True:
-            lines = list(islice(f2, 9697, 9727)) # get the top 30 for remaining qid 
+            lines = list(islice(f2, 9696, 9726)) # get the top 30 for remaining qid 
             #lines = list(islice(f2, 9512, 9542)) #get top 30 from tf-idf
             if not lines:
                 break

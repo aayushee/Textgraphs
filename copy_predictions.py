@@ -34,7 +34,7 @@ def read_pred(bert_fname,ilp_fname):
     print("reading remaining bert preds...")
     with open(bert_fname,'r') as f2:
         while True:
-            lines = list(islice(f2, 30, 9727))
+            lines = list(islice(f2, 30, 9726))
             if not lines:
                 break
             else:

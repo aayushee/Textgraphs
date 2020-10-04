@@ -52,22 +52,23 @@ Run preprocess_ilp.py to generate train and test data file for ILP model.\
     python preprocess_ilp.py train\
     python preprocess_ilp.py test\
 Run get_ilp_results.py to get scores from ILP for train and test data.\
-    Set Solver Port and Solver Domain in lines 9 and 10 as set up in SemanticILP above.\
-    Set n=3/4 to get 3 feature scores or 4 feature scores.\
-    Set parameter mode=train/test 
-    python get_ilp_results.py n mode
+    Set Solver Port and Solver Domain in lines 9 and 10 as set up in SemanticILP above. They are set to '9003' and 'localhost' by default.\
+    Set n=2/3/4 to get 2/3/4 feature scores. \
+    Set parameter mode=train/test  \
+    python get_ilp_results.py mode n \
+    The SemanticILP code is set up for 3 features by default. To make feature parameter change, see the repository link mentioned above.\
 Run linear_regression.py to perform linear regression on the dataset followed by running regression_predictions.py to sort scores and regenerate ranked predictions.\
-    Set n as 3/4 to get 3 or 4 features combined scores respectively.\
+    Set n as 2/3/4 to get 2/3/4 features combined scores respectively.\
     python linear_regression.py n\
-    Set n as 3/4 to get 3 or 4 features predictions respectively.\
+    Set n as 2/3/4 to get 2/3/4 features predictions respectively.\
     python regression_predictions.py n\
     The top 30 predictions from regression model created from above are also available in the 'predictions' folder:\
     regression_preds3.txt \
     regression_preds4.txt \
 Run copy_predictions.py to add remaining predictions from BERT baseline after top-K and evaluate.py to evaluate the generated predictions.\
-    Set n as 3/4 to get 3 or 4 features predictions respectively. \
+    Set n as 2/3/4 to get 2/3/4 features predictions respectively. \
     python copy_predictions.py n \
-    generated files: pred_bert_regression_3scores_combined.txt/pred_bert_regression_4scores_combined.txt \
+    generated files: pred_bert_regression_2scores_combined.txt/pred_bert_regression_3scores_combined.txt/pred_bert_regression_4scores_combined.txt \
     python evaluate.py --gold questions/questions.test.tsv predictions/[generated file.txt]  
 
 D) Summarizer Ranking

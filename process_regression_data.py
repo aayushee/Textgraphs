@@ -58,7 +58,7 @@ path=""
 facts_file=path+"questions/explanations.tsv"
 mode = 'train'
 if mode=='train' or mode=='dev':
-    prediction_fname = path+'tfidf_'+mode+'_top30.txt'
+    prediction_fname = path+'questions/tfidf_'+mode+'_top30.txt'
 else:
     prediction_fname = path + 'predictions/bert_top30.txt'
 questions_file = path+'questions/questions.'+mode+'.tsv'

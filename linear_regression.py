@@ -48,7 +48,7 @@ model = LinearRegression()
 model.fit(features_scaled, labels)
 intercept=model.intercept_
 
-print("coef of determination: ",model.coef_)
+print("coefficients values: ",model.coef_)
 print ("intercept value: ",intercept)
 
 mode='test'
@@ -61,7 +61,7 @@ TestData = np.genfromtxt(fname_test, delimiter=',')[1:] # Remove the CSV header
 test_features = TestData[:,2:]
 #print(features[0:10])
 test_features_scaled=preprocessing.scale(test_features)
-print(test_features_scaled.shape[0])
+print('number of test data rows:',test_features_scaled.shape[0])
 #print(test_features_scaled[0])
 
 def relevanceScore4(intercept, f1Coef, f2Coef, f3Coef, f4Coef,qpa, paa, ipa, isa):

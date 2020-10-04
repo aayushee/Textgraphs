@@ -951,7 +951,7 @@ def main():
         task=args.task_name
         mode='train'
         train_examples=load_examples(args,task,mode)
-        cached_features_file = 'features_{}_{}_{}_{}'.format(mode,list(filter(None, args.model_name_or_path.split('/'))).pop(),str(args.max_seq_length),str(task))
+        cached_features_file = os.path.join(args.data_dir,'features_{}_{}_{}_{}'.format(mode,list(filter(None, args.model_name_or_path.split('/'))).pop(),str(args.max_seq_length),str(task)))
         if args.cached_features_file:
             cached_features_file = args.cached_features_file
 

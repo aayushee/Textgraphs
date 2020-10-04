@@ -51,7 +51,10 @@ def write_pred(new_fname,pred_dict):
         for item in pred_dict.keys():
             explist=pred_dict[item]
             for exp in explist:
-                wr.write(item+'\t'+exp+'\n')
+                if exp=='Good':
+                    continue
+                else:
+                    wr.write(item+'\t'+exp+'\n')
 
 
 path=""

@@ -6,12 +6,14 @@ from collections import OrderedDict
 import pandas as pd
 import sys
 
-SOLVER_DOMAIN = '192.168.1.103'
+SOLVER_DOMAIN = 'localhost'
 SOLVER_PORT = '9003'
  
 mode=sys.argv[1]
 irange=sys.argv[2]
-if int(irange)==3:
+if int(irange)==2:
+    colname="QID,EID,QPA,PAA"
+elif int(irange)==3:
     colname="QID,EID,QPA,PAA,IPA"
 else:
     colname="QID,EID,QPA,PAA,IPA,ISA"
@@ -24,12 +26,13 @@ def write_result(qid,exp,qpa,paa,ipa,isa):
     
     with open (result_fname,'a') as wr:
         for i in range (0,len(exp)):
-            if len(isa)<1:
+            if int(irange)==2:
+                wr.write(qid+','+exp[i]+','+qpa[i]+','+paa[i]+'\n')
+            elif int(irange)==3:
                 wr.write(qid+','+exp[i]+','+qpa[i]+','+paa[i]+','+ipa[i]+'\n')
             else:
                 wr.write(qid+','+exp[i]+','+qpa[i]+','+paa[i]+','+ipa[i]+','+isa[i]+'\n')
 
-    
 def read_exp(exp_file):
     exp_dict={}
     with open(exp_file,'r') as f1:
@@ -90,12 +93,14 @@ def read_data(fname,exp_dict,irange):
             exp_ids=[]
             if len(indexes) >1:
                 for i in range(0,len(indexes),int(irange)):
-                
                     qpa.append(indexes[i].strip())
                     paa.append(indexes[i+1].strip())
-                    ipa.append(indexes[i+2].strip())
+                    if int(irange)==3:
+                        ipa.append(indexes[i+2].strip())
                     if int(irange)==4:
+                        ipa.append(indexes[i+2].strip())
                         isa.append(indexes[i+3].strip())
+                    
                 for sent in sents:
                     exp_ids.append(exp_dict[sent.strip()])
                 write_result(text[0].strip(),exp_ids,qpa,paa,ipa,isa)
