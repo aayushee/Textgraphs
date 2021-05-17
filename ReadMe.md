@@ -1,16 +1,37 @@
+This repository consists of our code submitted to the [Textgraphs 2020](https://www.aclweb.org/anthology/volumes/2020.textgraphs-1) {held during COLING 2020} workshop shared task on Multi-Hop Inference Explanation Regeneration. The task details are here: https://competitions.codalab.org/competitions/23615
+
+
+**CITATION**
+
+If you find the code useful in your research, then consider citing our paper:
+
+>@inproceedings{gupta-srinivasaraghavan-2020-explanation,\
+>title = "Explanation Regeneration via Multi-Hop {ILP} Inference over Knowledge Base",\
+>author = "Gupta, Aayushee and Srinivasaraghavan, Gopalakrishnan",\
+>booktitle = "Proceedings of the Graph-based Methods for Natural Language Processing (TextGraphs)",\
+>month = dec,\
+>year = "2020",\
+>address = "Barcelona, Spain (Online)",\
+>publisher = "Association for Computational Linguistics",\
+>url = "https://www.aclweb.org/anthology/2020.textgraphs-1.13",\
+>pages = "109--114",\
+>abstract = "Textgraphs 2020 Workshop organized a shared task on 'Explanation Regeneration' that required reconstructing gold explanations for elementary science questions. This work describes our submission to the task which is based on multiple components: a BERT baseline ranking, an Integer Linear Program (ILP) based re-scoring and a regression model for re-ranking the explanation facts. Our system achieved a Mean Average Precision score of 0.3659."}\
+
+
 All our experiments were done with python 3.6 Miniconda environment. 
 Make sure following packages are available in the environment with pip install:
 numpy, tqdm, scikit-learn, pandas, requests, urllib3, scipy, nltk, torch, torchvision.\
 For BERT Baseline Ranking, the experiments were done on Google Colab GPU.
 
-A) TF-IDF Ranking\
+**A) TF-IDF Ranking**
+
 Run baseline.py with the following parameters to generate tf-idf baseline ranking:\
         python baseline.py -n 30 tablestore/v2.1/tables questions/questions.test.tsv>predictions/tfidf_top30.txt\
 To evaluate it, run:\
         python evaluate.py --gold questions/questions.test.tsv predictions/tfidf_top30.txt\
         This gives MAP on TF-IDF baseline ranking.
 
-B) BERT Baseline Ranking
+**B) BERT Baseline Ranking**
 1. Run bert_reranker.py to generate training,eval and test examples and features from dataset. Then train and test model and save test predictions as follows:\
 Requirements:\
 pip install transformers==2.2.1\
@@ -41,7 +62,8 @@ and test examples file [examples_test_bert-base-uncased_140_tg2020] in 'question
     python evaluate.py --gold questions/questions.test.tsv predictions/predictions_bert.txt  \
     This gives MAP on BERT baseline ranking.
 
-C) ILP Rescoring and Regression Reranking\
+**C) ILP Rescoring and Regression Reranking**
+
 The code for ILP is hosted at: https://github.com/aayushee/semanticilp   \
 It is in Scala. Clone the repository, further instructions for setting it up are present in the readme file in the repository.
 
@@ -71,7 +93,8 @@ Run copy_predictions.py to add remaining predictions from BERT baseline after to
     generated files: pred_bert_regression_2scores_combined.txt/pred_bert_regression_3scores_combined.txt/pred_bert_regression_4scores_combined.txt \
     python evaluate.py --gold questions/questions.test.tsv predictions/[generated file.txt]  
 
-D) Summarizer Ranking
+**D) Summarizer Ranking**
+
 Run textrank.py file to get predictions on test data from summarizer.
  python preprocess_ilp.py test\
  python textrank.py\
