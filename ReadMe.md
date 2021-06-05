@@ -15,7 +15,7 @@ If you find the code useful in your research, then consider citing our paper:
 >publisher = "Association for Computational Linguistics",\
 >url = "https://www.aclweb.org/anthology/2020.textgraphs-1.13", \
 >pages = "109--114",\
->abstract = "Textgraphs 2020 Workshop organized a shared task on 'Explanation Regeneration' that required reconstructing gold explanations for elementary science questions. This work describes our submission to the task which is based on multiple components: a BERT baseline ranking, an Integer Linear Program (ILP) based re-scoring and a regression model for re-ranking the explanation facts. Our system achieved a Mean Average Precision score of 0.3659."} \
+>abstract = "Textgraphs 2020 Workshop organized a shared task on 'Explanation Regeneration' that required reconstructing gold explanations for elementary science questions. This work describes our submission to the task which is based on multiple components: a BERT baseline ranking, an Integer Linear Program (ILP) based re-scoring and a regression model for re-ranking the explanation facts. Our system achieved a Mean Average Precision score of 0.3659."} 
 
 
 All our experiments were done with python 3.6 Miniconda environment. 
